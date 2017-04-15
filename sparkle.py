@@ -42,11 +42,11 @@ def startup(strip):
 def set_color(strip, index, r, g, b):
     strip.setPixelColor(index, r << 16 | g << 8 | b)
 
-def set_color_hsv(strip, index, h, s, v):
-    color = colorsys.hsv_to_rgb(h, s, v)
-    set_color(strip, index, int(color[0] * 255), int(color[1] * 255), int(color[2] * 255))
-
 def main_loop(strip):
+    leds = []
+    for i in range(numpixels):
+        leds.append([0,0,0])
+
     dots = 10
     color_index = 0.0
     color_inc = .001
@@ -54,11 +54,20 @@ def main_loop(strip):
         clear(strip)
         for i in range(dots):
             index = randint(0, numpixels - 1)
-            set_color_hsv(strip, index, color_index, 1, 1) 
+            color = colorsys.hsv_to_rgb(color_index, 1.0, 1.0)
+            leds[index][0] = int(color[0] * 255)
+            leds[index][1] = int(color[1] * 255)
+            leds[index][2] = int(color[2] * 255)
+            for j, l in enumerate(leds):
+                set_color(strip, j, leds[j][0], leds[j][1], leds[j][2])
 
         strip.show();
-        sleep(.1)
+        sleep(.05)
         color_index += color_inc
+        for i in range(numpixels):
+            leds[i][0] >>= 1
+            leds[i][1] >>= 1
+            leds[i][2] >>= 1
 
 
 strip = Adafruit_DotStar(numpixels, order='bgr')
