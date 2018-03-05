@@ -42,7 +42,8 @@ def startup(strip):
 def set_color(strip, index, r, g, b):
     strip.setPixelColor(index, r << 16 | g << 8 | b)
 
-palette = { 0x6B0848, 0xA40A3C, 0x#EC610A, 0x#FFC300 }
+palette = [ 0x6B0848, 0xA40A3C, 0xEC610A, 0xFFC300 ]
+#palette = [ 0x0278AE, 0x51ADCF, 0xA5ECD7, 0xE8FFC1 ]
 
 def main_loop(strip):
     leds = []
@@ -53,15 +54,20 @@ def main_loop(strip):
     while True:
         clear(strip)
         for i in range(dots):
-            index = randint(0, len(palette) - 1)
-            leds[index][0] = palette[index] >> 16
-            leds[index][1] = (palette[index] >> 8) & 0xFF
-            leds[index][2] = palette[index] & 0xFF
+            led_index = randint(0, numpixels - 1)
+            color_index = randint(0, len(palette) - 1)
+            leds[led_index][0] = palette[color_index] >> 16
+            leds[led_index][1] = (palette[color_index] >> 8) & 0xFF
+            leds[led_index][2] = palette[color_index] & 0xFF
             for j, l in enumerate(leds):
                 set_color(strip, j, leds[j][0], leds[j][1], leds[j][2])
 
         strip.show();
         sleep(.05)
+        for i in range(numpixels):
+            leds[i][0] >>= 1
+            leds[i][1] >>= 1
+            leds[i][2] >>= 1
 
 
 strip = Adafruit_DotStar(numpixels, order='bgr')
